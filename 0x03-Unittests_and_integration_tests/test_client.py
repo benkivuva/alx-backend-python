@@ -4,8 +4,8 @@ for client.py file.
 """
 
 import unittest
-from unittest.mock import patch
-from client import GithubOrgClient, get_json
+from unittest.mock import patch, PropertyMock
+from client import GithubOrgClient
 from parameterized import parameterized
 
 
@@ -25,6 +25,16 @@ class TestGithubOrgClient(unittest.TestCase):
         r = GithubOrgClient(url)
         self.assertEqual(r.org, expected_result)
         mock.assert_called_once()
+
+    def test_public_repos_url(self):
+        """ Tests that _public_repos_url returns a known payload.
+        """
+        with patch('client.GithubOrgClient.org',
+                   new_callable=PropertyMock) as mock:
+            mock.return_value = {'repos_url': 'http://mock.url'}
+            tg = GithubOrgClient('xyz')
+            r = tg._public_repos_url
+            self.assertEqual(r, mock.return_value.get('repos_url'))
 
 
 if __name__ == "__main__":
