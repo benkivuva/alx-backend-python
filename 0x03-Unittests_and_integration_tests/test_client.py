@@ -31,10 +31,45 @@ class TestGithubOrgClient(unittest.TestCase):
         """
         with patch('client.GithubOrgClient.org',
                    new_callable=PropertyMock) as mock:
-            mock.return_value = {'repos_url': 'http://mock.url'}
+            mock.return_value = {'repos_url': 'http://testing.url'}
             tg = GithubOrgClient('xyz')
             r = tg._public_repos_url
             self.assertEqual(r, mock.return_value.get('repos_url'))
+
+    @patch('client.get_json')
+    def test_public_repos(self, get_json_mock):
+        """ Tests that test_public_repos returns a known payload.
+        """
+        get_json_mock.return_value = [
+            {'name': 'repo_0'},
+            {'name': 'repo_1'},
+            {'name': 'repo_2'}
+        ]
+        get_json_mock()
+        with patch('client.GithubOrgClient._public_repos_url',
+                   new_callable=PropertyMock) as mock:
+            mock.return_value = [
+                {'name': 'repo_0'},
+                {'name': 'repo_1'},
+                {'name': 'repo_2'}
+            ]
+            ghc = GithubOrgClient('xyz')
+            r = ghc._public_repos_url
+            self.assertEqual(r, mock.return_value)
+            mock.assert_called_once()
+            get_json_mock.assert_called_once()
+
+    @parameterized.expand([
+        ({"license": {"key": "my_license"}}, "my_license", True),
+        ({"license": {"key": "other_license"}}, "my_license", False)
+    ])
+    def test_has_license(self, repo, license_key, expected_result):
+        """ Tests that has_license returns the correct values.
+        """
+        self.assertEqual(
+            GithubOrgClient.has_license(repo, license_key),
+            expected_result
+        )
 
 
 if __name__ == "__main__":
