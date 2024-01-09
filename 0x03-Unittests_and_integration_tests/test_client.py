@@ -85,15 +85,13 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """setUpClass method"""
-        cls.get_patcher = patch(
-            'requests.get',
-            side_effect=[
-                cls.org_payload,
-                cls.repos_payload,
-                cls.org_payload,
-                cls.repos_payload,
-            ]
-        )
+        config = {'return_value.json.side_effect':
+                  [
+                      cls.org_payload, cls.repos_payload,
+                      cls.org_payload, cls.repos_payload
+                  ]
+                  }
+        cls.get_patcher = patch('requests.get', **config)
         cls.get_patcher.start()
 
     @classmethod
