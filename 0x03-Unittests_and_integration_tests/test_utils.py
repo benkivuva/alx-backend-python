@@ -6,6 +6,7 @@ from parameterized import parameterized
 import unittest
 from typing import Mapping, Sequence
 
+
 class TestAccessNestedMap(unittest.TestCase):
     """ TestAccessNestedMap inherits from unittest.TestCase to test
     utils.access_nested_map.
@@ -24,6 +25,7 @@ class TestAccessNestedMap(unittest.TestCase):
         self.assertEqual(
             access_nested_map(nested_map, path), expected_result
         )
+
 
 if __name__ == '__main__':
     unittest.main()
